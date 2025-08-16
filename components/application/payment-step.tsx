@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { ArrowLeft, CreditCard, Smartphone, CheckCircle } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
+import { CurrencyConverter } from "@/components/ui/currency-converter"
 
 interface PaymentStepProps {
   data: any
@@ -132,12 +133,12 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
             </div>
             <div className="flex justify-between">
               <span className="text-white/70">Application Fee:</span>
-              <span>${applicationFee}</span>
+              <CurrencyConverter amount={applicationFee} />
             </div>
             <div className="border-t border-white/10 pt-2 mt-2">
               <div className="flex justify-between font-semibold">
                 <span>Total:</span>
-                <span>${applicationFee}</span>
+                <CurrencyConverter amount={applicationFee} />
               </div>
             </div>
           </div>
@@ -162,7 +163,15 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
               disabled={loading}
               className="w-full bg-white text-black hover:bg-white/90 ios-bounce"
             >
-              {loading && data.payment_method === "stripe" ? "Processing..." : `Pay $${applicationFee} with Card`}
+              {loading && data.payment_method === "stripe" ? (
+                "Processing..."
+              ) : (
+                <span className="flex items-center justify-center space-x-2">
+                  <span>Pay</span>
+                  <CurrencyConverter amount={applicationFee} />
+                  <span>with Card</span>
+                </span>
+              )}
             </Button>
           </div>
 
@@ -213,18 +222,30 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
                     disabled={loading || !mobileNumber}
                     className="bg-yellow-600 hover:bg-yellow-700 text-white"
                   >
-                    {loading && data.payment_method === "mtn_momo"
-                      ? "Processing..."
-                      : `Pay $${applicationFee} - MTN MoMo`}
+                    {loading && data.payment_method === "mtn_momo" ? (
+                      "Processing..."
+                    ) : (
+                      <span className="flex items-center justify-center space-x-1 text-sm">
+                        <span>Pay</span>
+                        <CurrencyConverter amount={applicationFee} />
+                        <span>- MTN MoMo</span>
+                      </span>
+                    )}
                   </Button>
                   <Button
                     onClick={() => handleMobileMoneyPayment("airtel_pay")}
                     disabled={loading || !mobileNumber}
                     className="bg-red-600 hover:bg-red-700 text-white"
                   >
-                    {loading && data.payment_method === "airtel_pay"
-                      ? "Processing..."
-                      : `Pay $${applicationFee} - Airtel Pay`}
+                    {loading && data.payment_method === "airtel_pay" ? (
+                      "Processing..."
+                    ) : (
+                      <span className="flex items-center justify-center space-x-1 text-sm">
+                        <span>Pay</span>
+                        <CurrencyConverter amount={applicationFee} />
+                        <span>- Airtel Pay</span>
+                      </span>
+                    )}
                   </Button>
                 </div>
 

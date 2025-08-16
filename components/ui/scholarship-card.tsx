@@ -2,6 +2,7 @@ import { GlassCard } from "./glass-card"
 import { Button } from "./button"
 import { Calendar, MapPin, GraduationCap, DollarSign } from "lucide-react"
 import Link from "next/link"
+import { CurrencyConverter } from "./currency-converter"
 
 interface ScholarshipCardProps {
   scholarship: {
@@ -63,7 +64,9 @@ export function ScholarshipCard({ scholarship }: ScholarshipCardProps) {
           </div>
 
           <div className="flex items-center justify-between">
-            <span className="text-white/50 text-xs">Fee: ${scholarship.application_fee}</span>
+            <div className="text-white/50 text-xs">
+              Fee: <CurrencyConverter amount={scholarship.application_fee} />
+            </div>
 
             <Link
               href={`/${scholarship.country.code}/${scholarship.id}/${scholarship.name.toLowerCase().replace(/\s+/g, "-")}`}

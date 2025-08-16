@@ -4,8 +4,9 @@ import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
-import { Calendar, GraduationCap, DollarSign, Clock, CheckCircle, Users } from "lucide-react"
+import { Calendar, GraduationCap, DollarSign, Clock, CheckCircle, Users, AlertTriangle } from "lucide-react"
 import Link from "next/link"
+import { CurrencyConverter } from "@/components/ui/currency-converter"
 
 interface ScholarshipPageProps {
   params: {
@@ -88,7 +89,7 @@ export default async function ScholarshipPage({ params }: ScholarshipPageProps) 
               <GlassCard className="text-center p-4">
                 <Users className="h-6 w-6 mx-auto mb-2 text-white/70" />
                 <p className="text-sm text-white/60">Fee</p>
-                <p className="font-semibold">${scholarship.application_fee}</p>
+                <CurrencyConverter amount={scholarship.application_fee} />
               </GlassCard>
             </div>
           </div>
@@ -113,6 +114,34 @@ export default async function ScholarshipPage({ params }: ScholarshipPageProps) 
                   <h2 className="text-2xl font-bold mb-4">Benefits</h2>
                   <div className="prose prose-invert max-w-none">
                     <p className="text-white/80 leading-relaxed">{scholarship.benefits}</p>
+                  </div>
+                </GlassCard>
+
+                {/* Important Information */}
+                <GlassCard>
+                  <h2 className="text-2xl font-bold mb-4">Important Information</h2>
+                  <div className="space-y-4">
+                    <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4">
+                      <h3 className="font-semibold text-blue-300 mb-2">Commitment Fee</h3>
+                      <p className="text-white/80 text-sm leading-relaxed">
+                        A commitment fee of <strong>UGX 4,000,000</strong> is required, payable in 4 phases starting
+                        with UGX 1,000,000 during application. This ensures your commitment to the scholarship program.
+                      </p>
+                    </div>
+
+                    <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4">
+                      <div className="flex items-start space-x-3">
+                        <AlertTriangle className="h-5 w-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h3 className="font-semibold text-yellow-300 mb-2">Additional Fees</h3>
+                          <p className="text-white/80 text-sm leading-relaxed">
+                            Visa fees and ticket fees may be charged to the applicant by the company, unless
+                            specifically waived by the scholarship scheme. These costs vary by destination and are
+                            separate from the application fee.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </GlassCard>
               </div>
@@ -148,7 +177,10 @@ export default async function ScholarshipPage({ params }: ScholarshipPageProps) 
 
                   <Link href={`/apply?scholarship=${scholarship.id}`}>
                     <Button className="w-full bg-white text-black hover:bg-white/90 ios-bounce mb-4">
-                      Apply for ${scholarship.application_fee}
+                      <span className="flex items-center justify-center space-x-2">
+                        <span>Apply for</span>
+                        <CurrencyConverter amount={scholarship.application_fee} />
+                      </span>
                     </Button>
                   </Link>
 
