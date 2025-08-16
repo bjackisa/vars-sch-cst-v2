@@ -81,7 +81,7 @@ export default function ContactPage() {
                       <Mail className="h-5 w-5 text-white/70" />
                       <div>
                         <p className="font-medium">Email</p>
-                        <p className="text-white/70 text-sm">info@varsityscholars.com</p>
+                        <p className="text-white/70 text-sm">info@varsityscholarsconsult.com</p>
                       </div>
                     </div>
 
@@ -89,7 +89,7 @@ export default function ContactPage() {
                       <MapPin className="h-5 w-5 text-white/70" />
                       <div>
                         <p className="font-medium">Location</p>
-                        <p className="text-white/70 text-sm">Old Kampala, Uganda</p>
+                        <p className="text-white/70 text-sm">Level 2, Echo Plaza, Martin Rd, Old Kampala (UG)</p>
                       </div>
                     </div>
                   </div>

@@ -8,7 +8,9 @@ export default function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0">
           {/* Copyright and Company Info */}
           <div className="text-center md:text-left">
-            <p className="text-white/70 text-sm">© Varsity Scholars Consult Limited. Old Kampala.</p>
+            <p className="text-white/70 text-sm">
+              © Varsity Scholars Consult Limited. Level 2, Echo Plaza, Martin Rd, Old Kampala (UG).
+            </p>
             <p className="text-white/50 text-xs mt-1">
               +91 73967 03904 • +256 763253514 • Registered with URSB in Uganda
             </p>
