@@ -58,7 +58,7 @@ export async function updateSession(request: NextRequest) {
   // Protected routes - redirect to login if not authenticated
   const isAuthRoute = request.nextUrl.pathname.startsWith("/auth/")
   const isPublicRoute =
-    ["/", "/scholarships", "/career", "/contact", "/track"].includes(request.nextUrl.pathname) ||
+    ["/", "/scholarships", "/career", "/contact", "/track", "/about"].includes(request.nextUrl.pathname) ||
     request.nextUrl.pathname.startsWith("/scholarships/") ||
     request.nextUrl.pathname.match(/^\/[a-z]{2}\/\d+\/[^/]+$/) || // Dynamic scholarship routes
     request.nextUrl.pathname.startsWith("/_next") ||
