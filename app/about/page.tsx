@@ -1,7 +1,7 @@
 import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
 import { GlassCard } from "@/components/ui/glass-card"
-import { CheckCircle, Award, Users, Globe, Building, Star, TrendingUp, Mail, Phone } from "lucide-react"
+import { CheckCircle, Award, Users, Globe, Building, Star, TrendingUp, Mail, Phone, UserCircle, MapPin } from "lucide-react"
 
 export default function AboutPage() {
   return (
@@ -85,7 +85,7 @@ export default function AboutPage() {
                     Regions We Serve
                     </h2>
                     <div className="flex flex-wrap gap-4">
-                    {["India", "Russia", "Europe", "USA"].map(region => (
+                    {["India", "Russia", "Europe", "USA", "Australia", "New Zealand", "Canada", "and many more..."].map(region => (
                         <div key={region} className="bg-white/10 px-4 py-2 rounded-full text-sm font-medium">
                         {region}
                         </div>
@@ -137,6 +137,38 @@ export default function AboutPage() {
               </div>
             </GlassCard>
 
+            <GlassCard className="mb-12">
+              <h2 className="text-3xl font-bold text-center mb-8">Our Team</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="flex flex-col items-center text-center">
+                  <UserCircle className="h-24 w-24 text-white/50 mb-4" />
+                  <h3 className="text-xl font-bold">Abubaker</h3>
+                  <p className="text-white/70">CEO & CO-Founder</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Phone className="h-4 w-4 text-white/50" />
+                    <span className="text-sm">+91 73967 03904</span>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <MapPin className="h-4 w-4 text-white/50" />
+                    <span className="text-sm">Kampala, Uganda</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center text-center">
+                  <UserCircle className="h-24 w-24 text-white/50 mb-4" />
+                  <h3 className="text-xl font-bold">Idrisa Kiryowa</h3>
+                  <p className="text-white/70">Director International Affairs</p>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <Phone className="h-4 w-4 text-white/50" />
+                    <span className="text-sm">+256787867309</span>
+                  </div>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <MapPin className="h-4 w-4 text-white/50" />
+                    <span className="text-sm">St. Petersburg, Russia</span>
+                  </div>
+                </div>
+              </div>
+            </GlassCard>
+
             <GlassCard>
               <h2 className="text-3xl font-bold text-center mb-8">Let’s Connect</h2>
               <div className="flex flex-col sm:flex-row justify-center items-center gap-8 text-center">
@@ -148,7 +180,7 @@ export default function AboutPage() {
                   <Phone className="h-6 w-6 mr-3 text-green-400" />
                   <div>
                     <p>+256 757 992 736</p>
-                    <p>+97 999 514 0053</p>
+                    <p>+91 73967 03904</p>
                   </div>
                 </div>
               </div>
