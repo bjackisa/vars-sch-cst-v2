@@ -2,10 +2,39 @@ import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Globe, Users, Award, CheckCircle } from "lucide-react"
+import { ArrowRight, Globe, Users, Award, CheckCircle, Calendar, Clock, MapPin } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
+import { createServerClient } from "@/lib/supabase/server"
 
-export default function HomePage() {
+// Define the type for an event
+interface Event {
+  id: number
+  name: string
+  cover_photo_url: string | null
+  start_datetime: string
+  time_string: string | null
+  location: string | null
+  about: string | null
+  organizer: string | null
+  register_url: string | null
+}
+
+export default async function HomePage() {
+  const supabase = createServerClient()
+
+  // Fetch upcoming events
+  const { data: events, error } = await supabase
+    .from("events")
+    .select("*")
+    .gt("start_datetime", new Date().toISOString())
+    .order("start_datetime", { ascending: true })
+
+  if (error) {
+    console.error("Error fetching events:", error)
+    // Decide how to handle the error, maybe show a message
+  }
+
   const services = [
     "Flight Itinerary (Airport Pickup and Arrangement)",
     "Teaching Assistantship (Internships and Research)",
@@ -101,6 +130,63 @@ export default function HomePage() {
                 ))}
               </div>
             </GlassCard>
+          </div>
+        </section>
+
+        {/* Events Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Upcoming Events</h2>
+              <p className="text-white/70 text-lg">
+                Join us at our upcoming events to learn more about studying abroad.
+              </p>
+            </div>
+
+            {events && events.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {events.map((event: Event) => (
+                  <GlassCard key={event.id} className="flex flex-col">
+                    <div className="relative h-48 w-full mb-4">
+                      <Image
+                        src={event.cover_photo_url || "/placeholder.jpg"}
+                        alt={event.name}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-t-lg"
+                      />
+                    </div>
+                    <div className="p-4 flex flex-col flex-grow">
+                      <h3 className="text-xl font-bold mb-2">{event.name}</h3>
+                      <div className="space-y-2 text-white/70 text-sm mb-4">
+                        <div className="flex items-center space-x-2">
+                          <Calendar className="h-4 w-4" />
+                          <span>{new Date(event.start_datetime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Clock className="h-4 w-4" />
+                          <span>{event.time_string}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <MapPin className="h-4 w-4" />
+                          <span>{event.location}</span>
+                        </div>
+                      </div>
+                      <p className="text-white/80 text-sm mb-4 flex-grow">{event.about?.substring(0, 100)}...</p>
+                      <Link href={event.register_url || "#"} target="_blank">
+                        <Button className="w-full bg-white text-black hover:bg-white/90 ios-bounce mt-auto">
+                          Register Now
+                        </Button>
+                      </Link>
+                    </div>
+                  </GlassCard>
+                ))}
+              </div>
+            ) : (
+              <GlassCard className="text-center py-12">
+                <p className="text-white/70 text-lg">No upcoming events at the moment. Please check back soon!</p>
+              </GlassCard>
+            )}
           </div>
         </section>
 
