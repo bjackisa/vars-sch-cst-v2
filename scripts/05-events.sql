@@ -1,7 +1,7 @@
 -- Create events table
 CREATE TABLE IF NOT EXISTS public.events (
   id SERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL UNIQUE,
   cover_photo_url TEXT,
   start_datetime TIMESTAMPTZ NOT NULL,
   end_datetime TIMESTAMPTZ,
