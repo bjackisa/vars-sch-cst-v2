@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ArrowRight, Globe, Users, Award, CheckCircle, Calendar, Clock, MapPin } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { createServerClient } from "@/lib/supabase/server"
+import { createClient } from "@/lib/supabase/server"
 
 // Define the type for an event
 interface Event {
@@ -21,7 +21,7 @@ interface Event {
 }
 
 export default async function HomePage() {
-  const supabase = createServerClient()
+  const supabase = createClient()
 
   // Fetch upcoming events
   const { data: events, error } = await supabase
