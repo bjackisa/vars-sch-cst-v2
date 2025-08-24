@@ -5,6 +5,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { Menu, X, User, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ThemeSwitcher } from "@/components/ui/theme-switcher"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 
@@ -63,7 +64,7 @@ export default function Header() {
   const isActive = (href: string) => pathname === href
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-white/10">
+    <header className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/20">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -84,7 +85,9 @@ export default function Header() {
                 key={item.name}
                 href={item.href}
                 className={`px-4 py-2 rounded-xl text-sm font-medium transition-all duration-300 ios-bounce ${
-                  isActive(item.href) ? "bg-white/20 text-white" : "text-white/70 hover:text-white hover:bg-white/10"
+                  isActive(item.href)
+                    ? "bg-accent/20 text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/10"
                 }`}
               >
                 {item.name}
@@ -94,20 +97,29 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-3">
+            <ThemeSwitcher />
             {user ? (
               <>
                 <Link href="/notifications">
-                  <Button variant="ghost" size="sm" className="glass-button text-white/70 hover:text-white relative">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="glass-button text-muted-foreground hover:text-foreground relative"
+                  >
                     <Bell className="h-4 w-4" />
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
                         {unreadCount > 9 ? "9+" : unreadCount}
                       </span>
                     )}
                   </Button>
                 </Link>
                 <Link href="/dashboard">
-                  <Button variant="ghost" size="sm" className="glass-button text-white/70 hover:text-white">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="glass-button text-muted-foreground hover:text-foreground"
+                  >
                     <User className="h-4 w-4 mr-2" />
                     Dashboard
                   </Button>
@@ -116,13 +128,17 @@ export default function Header() {
             ) : (
               <>
                 <Link href="/auth/login">
-                  <Button variant="ghost" size="sm" className="glass-button text-white/70 hover:text-white">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="glass-button text-muted-foreground hover:text-foreground"
+                  >
                     <User className="h-4 w-4 mr-2" />
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/auth/sign-up">
-                  <Button size="sm" className="bg-white text-black hover:bg-white/90 ios-bounce">
+                  <Button size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90 ios-bounce">
                     Get Started
                   </Button>
                 </Link>
@@ -151,14 +167,19 @@ export default function Header() {
                 key={item.name}
                 href={item.href}
                 className={`px-4 py-3 rounded-xl text-sm font-medium transition-all duration-300 ios-bounce ${
-                  isActive(item.href) ? "bg-white/20 text-white" : "text-white/70 hover:text-white hover:bg-white/10"
+                  isActive(item.href)
+                    ? "bg-accent/20 text-accent-foreground"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent/10"
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
               </Link>
             ))}
-            <div className="pt-4 border-t border-white/10 space-y-2">
+            <div className="pt-4 border-t border-border/20 space-y-2">
+              <div className="flex justify-center pb-2">
+                <ThemeSwitcher />
+              </div>
               {user ? (
                 <>
                   <Link href="/notifications" onClick={() => setIsMenuOpen(false)}>
@@ -166,7 +187,7 @@ export default function Header() {
                       <Bell className="h-4 w-4 mr-2" />
                       Notifications
                       {unreadCount > 0 && (
-                        <span className="ml-auto w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        <span className="ml-auto w-5 h-5 bg-destructive text-destructive-foreground text-xs rounded-full flex items-center justify-center">
                           {unreadCount > 9 ? "9+" : unreadCount}
                         </span>
                       )}
@@ -188,7 +209,7 @@ export default function Header() {
                     </Button>
                   </Link>
                   <Link href="/auth/sign-up" onClick={() => setIsMenuOpen(false)}>
-                    <Button className="w-full bg-white text-black hover:bg-white/90">Get Started</Button>
+                    <Button className="w-full bg-accent text-accent-foreground hover:bg-accent/90">Get Started</Button>
                   </Link>
                 </>
               )}

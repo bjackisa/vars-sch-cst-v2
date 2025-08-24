@@ -1,10 +1,17 @@
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
-import { Plus, Users, MessageSquare, Settings, Bell, FileText } from "lucide-react"
+import { Plus, Users, MessageSquare, Settings, Bell, FileText, PenTool } from "lucide-react"
 import Link from "next/link"
 
 export function QuickActions() {
   const actions = [
+    {
+      title: "Manage Posts",
+      description: "Create timeline posts",
+      icon: PenTool,
+      href: "/admin/posts",
+      color: "bg-indigo-500/20 text-indigo-400",
+    },
     {
       title: "Add Scholarship",
       description: "Create new scholarship opportunity",

@@ -1,19 +1,15 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
 import { useActionState } from "react"
 import { useFormStatus } from "react-dom"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { GlassCard } from "@/components/ui/glass-card"
-import { OTPInput } from "@/components/ui/otp-input"
-import { Loader2, ArrowLeft } from "lucide-react"
+import { Loader2 } from "lucide-react"
 import Link from "next/link"
-import { signUp, verifyOtp, resendOtp } from "@/lib/auth-actions"
+import { signUp } from "@/lib/auth-actions"
 
-function SubmitButton({ isOtpStep }: { isOtpStep: boolean }) {
+function SubmitButton() {
   const { pending } = useFormStatus()
 
   return (
@@ -25,10 +21,8 @@ function SubmitButton({ isOtpStep }: { isOtpStep: boolean }) {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          {isOtpStep ? "Verifying..." : "Creating account..."}
+          Creating account...
         </>
-      ) : isOtpStep ? (
-        "Verify Account"
       ) : (
         "Create Account"
       )}
@@ -37,93 +31,7 @@ function SubmitButton({ isOtpStep }: { isOtpStep: boolean }) {
 }
 
 export default function SignUpForm() {
-  const [step, setStep] = useState<"signup" | "otp">("signup")
-  const [email, setEmail] = useState("")
-  const [otpCode, setOtpCode] = useState("")
-  const [isResending, setIsResending] = useState(false)
-
   const [signUpState, signUpAction] = useActionState(signUp, null)
-  const [otpState, otpAction] = useActionState(verifyOtp, null)
-
-  if (signUpState?.success && step === "signup") {
-    setStep("otp")
-  }
-
-  const handleResendOtp = async () => {
-    setIsResending(true)
-    try {
-      await resendOtp(email)
-    } catch (error) {
-      console.error("Resend OTP error:", error)
-    } finally {
-      setIsResending(false)
-    }
-  }
-
-  const handleOtpComplete = (otp: string) => {
-    setOtpCode(otp)
-  }
-
-  const handleOtpSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (otpCode.length === 6) {
-      const formData = new FormData()
-      formData.append("email", email)
-      formData.append("token", otpCode)
-      otpAction(formData)
-    }
-  }
-
-  if (step === "otp") {
-    return (
-      <GlassCard className="w-full max-w-md">
-        <div className="space-y-2 text-center mb-8">
-          <h1 className="text-4xl font-semibold tracking-tight text-white font-serif">Verify your email</h1>
-          <p className="text-lg text-white/70">
-            We sent a 6-digit code to <br />
-            <span className="font-medium text-white">{email}</span>
-          </p>
-        </div>
-
-        <form onSubmit={handleOtpSubmit} className="space-y-6">
-          {otpState?.error && (
-            <div className="bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-xl text-sm">
-              {otpState.error}
-            </div>
-          )}
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-white/80 text-center">Enter verification code</label>
-              <OTPInput onComplete={handleOtpComplete} />
-            </div>
-          </div>
-
-          <SubmitButton isOtpStep={true} />
-
-          <div className="text-center space-y-4">
-            <button
-              type="button"
-              onClick={handleResendOtp}
-              disabled={isResending}
-              className="text-white/70 hover:text-white text-sm underline disabled:opacity-50"
-            >
-              {isResending ? "Resending..." : "Didn't receive the code? Resend"}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setStep("signup")}
-              className="flex items-center justify-center gap-2 text-white/70 hover:text-white text-sm mx-auto"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to signup
-            </button>
-          </div>
-        </form>
-      </GlassCard>
-    )
-  }
 
   return (
     <GlassCard className="w-full max-w-md">
@@ -164,7 +72,6 @@ export default function SignUpForm() {
               placeholder="you@example.com"
               required
               className="glass-input"
-              onChange={(e) => setEmail(e.target.value)}
             />
           </div>
           <div className="space-y-2">
@@ -175,7 +82,7 @@ export default function SignUpForm() {
           </div>
         </div>
 
-        <SubmitButton isOtpStep={false} />
+        <SubmitButton />
 
         <div className="text-center text-white/70">
           Already have an account?{" "}

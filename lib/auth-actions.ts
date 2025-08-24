@@ -16,7 +16,7 @@ export async function signIn(prevState: any, formData: FormData) {
     return { error: "Email and password are required" }
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
 
   try {
     const { error } = await supabase.auth.signInWithPassword({
@@ -49,7 +49,7 @@ export async function signUp(prevState: any, formData: FormData) {
     return { error: "All fields are required" }
   }
 
-  const supabase = createClient()
+  const supabase = await createClient()
 
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -59,6 +59,7 @@ export async function signUp(prevState: any, formData: FormData) {
         data: {
           full_name: fullName.toString(),
         },
+        emailRedirectTo: undefined, // No email confirmation needed
       },
     })
 
@@ -66,7 +67,7 @@ export async function signUp(prevState: any, formData: FormData) {
       return { error: error.message }
     }
 
-    // Create user profile in our users table (will be confirmed after OTP verification)
+    // Create user profile in our users table immediately
     if (data.user) {
       const { error: profileError } = await supabase.from("users").insert({
         id: data.user.id,
@@ -76,10 +77,14 @@ export async function signUp(prevState: any, formData: FormData) {
 
       if (profileError) {
         console.error("Profile creation error:", profileError)
+        return { error: "Failed to create user profile" }
       }
+
+      revalidatePath("/", "layout")
+      redirect("/dashboard")
     }
 
-    return { success: "We've sent a verification code to your email." }
+    return { success: "Account created successfully!" }
   } catch (error) {
     console.error("Sign up error:", error)
     return { error: "An unexpected error occurred. Please try again." }
@@ -87,65 +92,8 @@ export async function signUp(prevState: any, formData: FormData) {
 }
 
 export async function signOut() {
-  const supabase = createClient()
+  const supabase = await createClient()
   await supabase.auth.signOut()
   revalidatePath("/", "layout")
   redirect("/auth/login")
-}
-
-export async function verifyOtp(prevState: any, formData: FormData) {
-  if (!formData) {
-    return { error: "Form data is missing" }
-  }
-
-  const email = formData.get("email")
-  const token = formData.get("token")
-
-  if (!email || !token) {
-    return { error: "Email and verification code are required" }
-  }
-
-  const supabase = createClient()
-
-  try {
-    const { data, error } = await supabase.auth.verifyOtp({
-      email: email.toString(),
-      token: token.toString(),
-      type: "signup",
-    })
-
-    if (error) {
-      return { error: error.message }
-    }
-
-    if (data.user) {
-      revalidatePath("/", "layout")
-      redirect("/dashboard")
-    }
-
-    return { success: "Account verified successfully!" }
-  } catch (error) {
-    console.error("OTP verification error:", error)
-    return { error: "An unexpected error occurred. Please try again." }
-  }
-}
-
-export async function resendOtp(email: string) {
-  const supabase = createClient()
-
-  try {
-    const { error } = await supabase.auth.resend({
-      type: "signup",
-      email: email,
-    })
-
-    if (error) {
-      throw error
-    }
-
-    return { success: "Verification code resent successfully!" }
-  } catch (error) {
-    console.error("Resend OTP error:", error)
-    throw error
-  }
 }
