@@ -2,11 +2,38 @@ import Header from "@/components/layout/header"
 import Footer from "@/components/layout/footer"
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Globe, Users, Award, CheckCircle } from "lucide-react"
+import {
+  ArrowRight,
+  Globe,
+  Users,
+  Award,
+  CheckCircle,
+  Search,
+  FileCheck2,
+  Plane,
+  GraduationCap,
+  Quote,
+} from "lucide-react"
 import Link from "next/link"
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/server"
 import { TimelinePost, TimelinePostCard } from "@/components/timeline/timeline-post-card"
 import { TimelineSkeleton } from "@/components/timeline/timeline-skeleton"
+import { ScholarshipCard } from "@/components/ui/scholarship-card"
+
+interface Scholarship {
+  id: string
+  name: string
+  description: string
+  country: {
+    name: string
+    code: string
+    flag_emoji: string
+  }
+  funding_type: string
+  education_level: string[]
+  application_deadline: string
+  application_fee: number
+}
 
 export default async function HomePage() {
   const supabase = createClient()
@@ -20,6 +47,22 @@ export default async function HomePage() {
     posts = data
   }
 
+  let featuredScholarships: Scholarship[] | null = null
+  if (isSupabaseConfigured) {
+    const { data } = await supabase
+      .from("scholarships")
+      .select(
+        `
+        *,
+        country:countries(*)
+      `,
+      )
+      .eq("is_active", true)
+      .order("created_at", { ascending: false })
+      .limit(3)
+    featuredScholarships = data
+  }
+
   const services = [
     "Flight Itinerary (Airport Pickup and Arrangement)",
     "Teaching Assistantship (Internships and Research)",
@@ -27,6 +70,47 @@ export default async function HomePage() {
     "Visa Support",
     "Consultation Services",
     "Scholarship Opportunities",
+  ]
+
+  const steps = [
+    {
+      icon: Search,
+      title: "Discover",
+      description: "Find scholarships that match your goals.",
+    },
+    {
+      icon: FileCheck2,
+      title: "Apply",
+      description: "Submit applications with expert guidance.",
+    },
+    {
+      icon: Plane,
+      title: "Prepare",
+      description: "Get visa and travel support.",
+    },
+    {
+      icon: GraduationCap,
+      title: "Succeed",
+      description: "Embark on your global education journey.",
+    },
+  ]
+
+  const testimonials = [
+    {
+      name: "Amina N.",
+      quote:
+        "Varsity Scholars Consult helped me secure a fully funded scholarship in India. The process was seamless!",
+    },
+    {
+      name: "Craig D.",
+      quote:
+        "Their guidance made my dream of studying abroad a reality. I can't thank them enough!",
+    },
+    {
+      name: "Laura N.",
+      quote:
+        "From application to arrival, the support was exceptional. Highly recommended!",
+    },
   ]
 
   return (
@@ -93,33 +177,77 @@ export default async function HomePage() {
               </GlassCard>
             </div>
           </div>
-        </section>
+          </section>
 
-        {/* Services Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Our Services</h2>
-              <p className="text-white/70 text-lg">
-                We connect you to services that help make your educational journey seamless
-              </p>
-            </div>
+          {/* How It Works Section */}
+          <section className="py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">How It Works</h2>
+                <p className="text-white/70 text-lg">
+                  Your path to studying abroad in four simple steps.
+                </p>
+              </div>
 
-            <GlassCard>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {services.map((service, index) => (
-                  <div key={index} className="flex items-center space-x-3">
-                    <CheckCircle className="h-5 w-5 text-white/70 flex-shrink-0" />
-                    <span className="text-white/80">{service}</span>
-                  </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+                {steps.map((step, index) => (
+                  <GlassCard key={index} className="text-center p-6">
+                    <step.icon className="h-10 w-10 mx-auto mb-4 text-white/70" />
+                    <h3 className="text-xl font-bold mb-2">{step.title}</h3>
+                    <p className="text-white/70 text-sm">{step.description}</p>
+                  </GlassCard>
                 ))}
               </div>
-            </GlassCard>
-          </div>
-        </section>
+            </div>
+          </section>
 
-        {/* Timeline Section */}
-        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          {/* Services Section */}
+          <section className="py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Our Services</h2>
+                <p className="text-white/70 text-lg">
+                  We connect you to services that help make your educational journey seamless
+                </p>
+              </div>
+
+              <GlassCard>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {services.map((service, index) => (
+                    <div key={index} className="flex items-center space-x-3">
+                      <CheckCircle className="h-5 w-5 text-white/70 flex-shrink-0" />
+                      <span className="text-white/80">{service}</span>
+                    </div>
+                  ))}
+                </div>
+              </GlassCard>
+            </div>
+          </section>
+
+          {/* Featured Scholarships Section */}
+          <section className="py-16 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center mb-12">
+                <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Featured Scholarships</h2>
+                <p className="text-white/70 text-lg">Top opportunities handpicked for you.</p>
+              </div>
+
+          {featuredScholarships && featuredScholarships.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredScholarships.map((scholarship) => (
+                <ScholarshipCard key={scholarship.id} scholarship={scholarship} />
+              ))}
+            </div>
+          ) : (
+            <GlassCard className="text-center py-12">
+              <p className="text-white/70">No featured scholarships available right now.</p>
+            </GlassCard>
+          )}
+        </div>
+      </section>
+
+      {/* Timeline Section */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Community Timeline</h2>
@@ -142,8 +270,28 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8">
+        {/* Testimonials Section */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Success Stories</h2>
+              <p className="text-white/70 text-lg">What our students say about us.</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {testimonials.map((t, index) => (
+                <GlassCard key={index} className="p-6 flex flex-col h-full">
+                  <Quote className="h-8 w-8 mb-4 text-white/70" />
+                  <p className="text-white/80 italic mb-4 flex-1">{t.quote}</p>
+                  <p className="text-white font-semibold">{t.name}</p>
+                </GlassCard>
+              ))}
+            </div>
+          </div>
+        </section>
+
+      {/* CTA Section */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <GlassCard>
               <h2 className="text-3xl md:text-4xl font-bold font-serif mb-4">Ready to Start Your Journey?</h2>
