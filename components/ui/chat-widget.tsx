@@ -43,7 +43,7 @@ ${name.trim()}`
   return (
     <>
       {/* Chat Button */}
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-12 right-6 z-50">
         <Button
           onClick={() => setIsOpen(!isOpen)}
           className="w-14 h-14 rounded-full bg-white text-black hover:bg-white/90 shadow-lg ios-bounce"
@@ -54,7 +54,7 @@ ${name.trim()}`
 
       {/* Chat Widget */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 w-80 z-50">
+        <div className="fixed bottom-30 right-6 w-80 z-50">
           <GlassCard className="p-6">
             <h3 className="text-lg font-semibold mb-4">Chat with us</h3>
 
