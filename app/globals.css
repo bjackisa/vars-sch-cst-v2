@@ -38,6 +38,8 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --body-gradient: radial-gradient(ellipse at top, rgba(0, 0, 0, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
 }
 
 .dark {
@@ -73,6 +75,8 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
+  --body-gradient: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
 }
 
 @theme inline {
@@ -124,25 +128,24 @@
 
   body {
     @apply bg-background text-foreground;
-    background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.05) 0%, transparent 50%),
-      radial-gradient(ellipse at bottom, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+    background: var(--body-gradient);
   }
 
   /* Glassmorphism utility classes */
   .glass {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10;
+    @apply backdrop-blur-xl bg-black/5 border border-black/10 dark:bg-white/5 dark:border-white/10;
   }
 
   .glass-card {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10 rounded-2xl;
+    @apply backdrop-blur-xl bg-black/5 border border-black/10 dark:bg-white/5 dark:border-white/10 rounded-2xl;
   }
 
   .glass-button {
-    @apply backdrop-blur-xl bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl transition-all duration-300;
+    @apply backdrop-blur-xl bg-black/10 hover:bg-black/20 border border-black/20 rounded-xl transition-all duration-300 dark:bg-white/10 dark:hover:bg-white/20 dark:border-white/20;
   }
 
   .glass-input {
-    @apply backdrop-blur-xl bg-white/5 border border-white/20 rounded-xl focus:border-white/40 focus:bg-white/10 transition-all duration-300;
+    @apply backdrop-blur-xl bg-black/5 border border-black/20 rounded-xl focus:border-black/40 focus:bg-black/10 transition-all duration-300 dark:bg-white/5 dark:border-white/20 dark:focus:border-white/40 dark:focus:bg-white/10;
   }
 
   /* iOS-inspired animations */
@@ -186,4 +189,60 @@
   .desktop-app {
     @apply min-h-screen bg-black;
   }
+}
+
+/* Light mode overrides for brand colors */
+.light .text-white {
+  color: rgb(0 0 0) !important;
+}
+.light .text-white\/40 {
+  color: rgb(0 0 0 / 0.4) !important;
+}
+.light .text-white\/50 {
+  color: rgb(0 0 0 / 0.5) !important;
+}
+.light .text-white\/60 {
+  color: rgb(0 0 0 / 0.6) !important;
+}
+.light .text-white\/70 {
+  color: rgb(0 0 0 / 0.7) !important;
+}
+.light .text-white\/80 {
+  color: rgb(0 0 0 / 0.8) !important;
+}
+.light .text-white\/90 {
+  color: rgb(0 0 0 / 0.9) !important;
+}
+.light .bg-white\/5 {
+  background-color: rgb(0 0 0 / 0.05) !important;
+}
+.light .bg-white\/10 {
+  background-color: rgb(0 0 0 / 0.1) !important;
+}
+.light .bg-white\/20 {
+  background-color: rgb(0 0 0 / 0.2) !important;
+}
+.light .bg-white\/90 {
+  background-color: rgb(0 0 0 / 0.9) !important;
+}
+.light .border-white\/5 {
+  border-color: rgb(0 0 0 / 0.05) !important;
+}
+.light .border-white\/10 {
+  border-color: rgb(0 0 0 / 0.1) !important;
+}
+.light .border-white\/20 {
+  border-color: rgb(0 0 0 / 0.2) !important;
+}
+.light .border-white\/40 {
+  border-color: rgb(0 0 0 / 0.4) !important;
+}
+.light .hover\:bg-white\/10:hover {
+  background-color: rgb(0 0 0 / 0.1) !important;
+}
+.light .hover\:bg-white\/20:hover {
+  background-color: rgb(0 0 0 / 0.2) !important;
+}
+.light .hover\:text-white:hover {
+  color: rgb(0 0 0) !important;
 }

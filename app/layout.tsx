@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import { Inter, Poppins } from "next/font/google"
 import "./globals.css"
 import { ChatWidget } from "@/components/ui/chat-widget"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,10 +31,16 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${poppins.variable} antialiased`}>
-      <body className="min-h-screen bg-black text-white font-sans">
-        {children}
-        <ChatWidget />
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`${inter.variable} ${poppins.variable} antialiased`}
+    >
+      <body className="min-h-screen bg-background text-foreground font-sans">
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+          {children}
+          <ChatWidget />
+        </ThemeProvider>
       </body>
     </html>
   )
