@@ -7,6 +7,7 @@ import { Menu, X, User, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
+import { ModeToggle } from "@/components/ui/mode-toggle"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -94,6 +95,7 @@ export default function Header() {
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-3">
+            <ModeToggle />
             {user ? (
               <>
                 <Link href="/notifications">
@@ -122,7 +124,7 @@ export default function Header() {
                   </Button>
                 </Link>
                 <Link href="/auth/sign-up">
-                  <Button size="sm" className="bg-white text-black hover:bg-white/90 ios-bounce">
+                  <Button size="sm" className="bg-black text-white hover:bg-black/90 ios-bounce dark:bg-white dark:text-black dark:hover:bg-white/90">
                     Get Started
                   </Button>
                 </Link>
@@ -145,6 +147,9 @@ export default function Header() {
       {/* Mobile Navigation */}
       {isMenuOpen && (
         <div className="md:hidden glass-card mx-4 mt-2 p-4">
+          <div className="flex justify-end mb-2">
+            <ModeToggle />
+          </div>
           <nav className="flex flex-col space-y-2">
             {navigation.map((item) => (
               <Link
