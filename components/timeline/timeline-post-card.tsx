@@ -15,7 +15,7 @@ export interface TimelinePost {
 
 export function TimelinePostCard({ post }: { post: TimelinePost }) {
   return (
-    <GlassCard className="min-w-[300px] max-w-sm flex-shrink-0 snap-center">
+    <GlassCard className="min-w-[300px] max-w-sm flex-shrink-0 overflow-hidden snap-center">
       {post.image_url && (
         <div className="relative h-40 w-full mb-4">
           <Image src={post.image_url} alt={post.title || post.type} fill className="object-cover rounded-t-lg" />
