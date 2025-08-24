@@ -43,7 +43,7 @@ ${name.trim()}`
   return (
     <>
       {/* Chat Button */}
-      <div className="fixed bottom-8 right-6 z-50">
+      <div className="fixed bottom-[2.6667rem] right-6 z-50">
         <Button
           onClick={() => setIsOpen(!isOpen)}
           className="w-14 h-14 rounded-full bg-white text-black hover:bg-white/90 shadow-lg ios-bounce"
