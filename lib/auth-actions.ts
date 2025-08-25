@@ -28,8 +28,22 @@ export async function signIn(prevState: any, formData: FormData) {
       return { error: error.message }
     }
 
+    // Determine if user is admin
+    let isAdmin = false
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (user) {
+      const { data: profile } = await supabase
+        .from("users")
+        .select("is_admin")
+        .eq("id", user.id)
+        .maybeSingle()
+      isAdmin = profile?.is_admin ?? false
+    }
+
     revalidatePath("/", "layout")
-    return { success: true }
+    return { success: true, isAdmin }
   } catch (error) {
     console.error("Login error:", error)
     return { error: "An unexpected error occurred. Please try again." }
@@ -119,8 +133,15 @@ export async function verifyOtp(prevState: any, formData: FormData) {
     }
 
     if (data.user) {
+      let isAdmin = false
+      const { data: profile } = await supabase
+        .from("users")
+        .select("is_admin")
+        .eq("id", data.user.id)
+        .maybeSingle()
+      isAdmin = profile?.is_admin ?? false
       revalidatePath("/", "layout")
-      redirect("/dashboard")
+      redirect(isAdmin ? "/admin" : "/dashboard")
     }
 
     return { success: "Account verified successfully!" }

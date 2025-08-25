@@ -41,7 +41,8 @@ export default function LoginForm({ redirectTo }: LoginFormProps) {
 
   useEffect(() => {
     if (state?.success) {
-      router.push(redirectTo || "/dashboard")
+      const destination = state.isAdmin ? "/admin" : redirectTo || "/dashboard"
+      router.push(destination)
     }
   }, [state, router, redirectTo])
 
