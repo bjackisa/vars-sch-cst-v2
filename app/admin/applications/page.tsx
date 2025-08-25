@@ -21,9 +21,15 @@ export default async function AdminApplicationsPage({
     redirect("/auth/login?redirect=/admin/applications")
   }
 
-  const { data: userProfile } = await supabase.from("users").select("*").eq("id", user.id).single()
+  const { data: userProfile } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle()
 
-  if (!userProfile?.is_admin) {
+  const isAdmin = userProfile?.is_admin || user.user_metadata?.is_admin
+
+  if (!isAdmin) {
     redirect("/dashboard")
   }
 
