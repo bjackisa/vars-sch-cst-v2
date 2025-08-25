@@ -13,7 +13,14 @@ export default async function SignUpPage() {
   } = await supabase.auth.getSession()
 
   if (session) {
-    redirect("/dashboard")
+    let isAdmin = false
+    const { data: profile } = await supabase
+      .from("users")
+      .select("is_admin")
+      .eq("id", session.user.id)
+      .maybeSingle()
+    isAdmin = profile?.is_admin ?? false
+    redirect(isAdmin ? "/admin" : "/dashboard")
   }
 
   return (

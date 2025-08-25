@@ -17,8 +17,15 @@ export default async function LoginPage({
   } = await supabase.auth.getSession()
 
   if (session) {
+    let isAdmin = false
+    const { data: profile } = await supabase
+      .from("users")
+      .select("is_admin")
+      .eq("id", session.user.id)
+      .maybeSingle()
+    isAdmin = profile?.is_admin ?? false
     const redirectTo = (searchParams.redirect as string) || "/dashboard"
-    redirect(redirectTo)
+    redirect(isAdmin ? "/admin" : redirectTo)
   }
 
   return (

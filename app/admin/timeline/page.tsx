@@ -30,7 +30,7 @@ export default async function TimelineAdminPage() {
     .select("*")
     .eq("id", user.id)
     .maybeSingle()
-  const isAdmin = profile?.is_admin || user.user_metadata?.is_admin
+  const isAdmin = profile?.is_admin
   if (!isAdmin) {
     redirect("/dashboard")
   }

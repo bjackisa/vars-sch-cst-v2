@@ -27,7 +27,7 @@ export default async function AdminApplicationsPage({
     .eq("id", user.id)
     .maybeSingle()
 
-  const isAdmin = userProfile?.is_admin || user.user_metadata?.is_admin
+  const isAdmin = userProfile?.is_admin
 
   if (!isAdmin) {
     redirect("/dashboard")
