@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { usePathname } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { ModeToggle } from "@/components/ui/mode-toggle"
+import { signOut } from "@/lib/auth-actions"
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -114,6 +115,15 @@ export default function Header() {
                     Dashboard
                   </Button>
                 </Link>
+                <form action={signOut}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="glass-button text-white/70 hover:text-white"
+                  >
+                    Log out
+                  </Button>
+                </form>
               </>
             ) : (
               <>
@@ -183,6 +193,15 @@ export default function Header() {
                       Dashboard
                     </Button>
                   </Link>
+                  <form action={signOut}>
+                    <Button
+                      variant="ghost"
+                      className="w-full glass-button justify-start"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Log out
+                    </Button>
+                  </form>
                 </>
               ) : (
                 <>
