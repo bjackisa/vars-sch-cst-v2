@@ -25,8 +25,13 @@ export default async function TimelineAdminPage() {
   if (!user) {
     redirect("/auth/login?redirect=/admin/timeline")
   }
-  const { data: profile } = await supabase.from("users").select("*").eq("id", user.id).single()
-  if (!profile?.is_admin) {
+  const { data: profile } = await supabase
+    .from("users")
+    .select("*")
+    .eq("id", user.id)
+    .maybeSingle()
+  const isAdmin = profile?.is_admin || user.user_metadata?.is_admin
+  if (!isAdmin) {
     redirect("/dashboard")
   }
 
