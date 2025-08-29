@@ -27,18 +27,30 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
     return "VSC" + Date.now().toString().slice(-8) + Math.random().toString(36).substr(2, 4).toUpperCase()
   }
 
-  const handleStripePayment = async () => {
+  const handleCardPayment = async () => {
     setLoading(true)
-    updateData({ payment_method: "stripe" })
+    updateData({ payment_method: "visa" })
+    const trackingId = generateTrackingId()
 
     try {
-      // Simulate Stripe payment processing
-      await new Promise((resolve) => setTimeout(resolve, 3000))
+      const res = await fetch("/api/visa/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount: preselectedScholarship?.application_fee || 0,
+          currency: "UGX",
+          reason: "Application Fee",
+          reference: trackingId,
+          redirect_url: `${window.location.origin}/dashboard?tracking_id=${trackingId}`,
+        }),
+      })
+      const session = await res.json()
+      if (!res.ok) throw new Error(session.error)
 
-      // Create application in database
-      await createApplication("stripe", "completed")
+      await createApplication(trackingId, "visa", "pending", session.session_id)
+      window.location.href = session.redirect_url
     } catch (error) {
-      console.error("Stripe payment error:", error)
+      console.error("Card payment error:", error)
       alert("Payment failed. Please try again.")
       setLoading(false)
     }
@@ -52,14 +64,41 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
 
     setLoading(true)
     updateData({ payment_method: provider })
+    const trackingId = generateTrackingId()
 
     try {
-      // Simulate mobile money processing
-      await new Promise((resolve) => setTimeout(resolve, 2000))
+      const res = await fetch("/api/payments/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          msisdn: mobileNumber,
+          amount: preselectedScholarship?.application_fee || 0,
+          currency: "UGX",
+          reference: trackingId,
+          reason: "Application Fee",
+        }),
+      })
+      const request = await res.json()
+      if (!res.ok) throw new Error(request.error)
 
-      // For demo purposes, we'll show success
-      // In production, you would integrate with actual mobile money APIs
-      await createApplication(provider, "completed")
+      // Poll status until success or timeout
+      let status = "PENDING"
+      for (let i = 0; i < 10 && status === "PENDING"; i++) {
+        await new Promise((r) => setTimeout(r, 3000))
+        const s = await fetch("/api/payments/status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ reference: request.reference }),
+        })
+        const sj = await s.json()
+        status = sj.status
+        if (status === "SUCCESSFUL") {
+          await createApplication(trackingId, provider, "completed", request.reference)
+          return
+        }
+      }
+
+      throw new Error("Payment not completed")
     } catch (error) {
       console.error("Mobile money payment error:", error)
       alert("Payment failed. Please try again.")
@@ -67,9 +106,13 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
     }
   }
 
-  const createApplication = async (paymentMethod: string, paymentStatus: string) => {
+  const createApplication = async (
+    trackingId: string,
+    paymentMethod: string,
+    paymentStatus: string,
+    paymentReference: string
+  ) => {
     const supabase = createClient()
-    const trackingId = generateTrackingId()
 
     const applicationData = {
       id: trackingId,
@@ -90,7 +133,7 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
       passport_document_url: data.passport_document_url,
       payment_method: paymentMethod,
       payment_status: paymentStatus,
-      payment_reference: `PAY_${trackingId}`,
+      payment_reference: paymentReference,
       amount_paid: preselectedScholarship?.application_fee || 0,
     }
 
@@ -103,7 +146,6 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
       return
     }
 
-    // Create notification
     await supabase.from("notifications").insert({
       user_id: user.id,
       application_id: trackingId,
@@ -148,22 +190,22 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
         <div className="space-y-4">
           <h3 className="font-semibold">Choose Payment Method</h3>
 
-          {/* Stripe Payment */}
+          {/* Card Payment */}
           <div className="p-4 bg-white/5 rounded-xl border border-white/10">
             <div className="flex items-center space-x-3 mb-4">
               <CreditCard className="h-6 w-6 text-white/70" />
               <div>
                 <h4 className="font-semibold">Credit/Debit Card</h4>
-                <p className="text-white/70 text-sm">Pay securely with Stripe</p>
+                <p className="text-white/70 text-sm">Pay securely with VISA/Mastercard</p>
               </div>
             </div>
 
             <Button
-              onClick={handleStripePayment}
+              onClick={handleCardPayment}
               disabled={loading}
               className="w-full bg-white text-black hover:bg-white/90 ios-bounce"
             >
-              {loading && data.payment_method === "stripe" ? (
+              {loading && data.payment_method === "visa" ? (
                 "Processing..."
               ) : (
                 <span className="flex items-center justify-center space-x-2">
