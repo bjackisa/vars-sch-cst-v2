@@ -9,6 +9,7 @@ const schema = z.object({
   currency: z.enum(["UGX", "KES", "TZS"]).default("UGX"),
   reference: z.string(),
   reason: z.string(),
+  provider: z.enum(["MTN", "AIRTEL"]),
 });
 
 export async function POST(req: Request) {

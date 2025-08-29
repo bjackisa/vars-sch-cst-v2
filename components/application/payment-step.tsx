@@ -23,6 +23,9 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
   const [mobileNumber, setMobileNumber] = useState("")
   const [manualPayment, setManualPayment] = useState(false)
   const [transactionId, setTransactionId] = useState("")
+  const [cardNumber, setCardNumber] = useState("")
+  const [expiryDate, setExpiryDate] = useState("")
+  const [cvv, setCvv] = useState("")
   const router = useRouter()
 
   const generateTrackingId = () => {
@@ -30,6 +33,11 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
   }
 
   const handleCardPayment = async () => {
+    if (!cardNumber || !expiryDate || !cvv) {
+      alert("Please enter your card details")
+      return
+    }
+
     setLoading(true)
     updateData({ payment_method: "visa" })
     const trackingId = generateTrackingId()
@@ -90,6 +98,7 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
           currency: "UGX",
           reference: trackingId,
           reason: "Application Fee",
+          provider: provider === "mtn_momo" ? "MTN" : "AIRTEL",
         }),
       })
       const request = await res.json()
@@ -184,7 +193,7 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
     updateData({ payment_method: "manual" })
     const trackingId = generateTrackingId()
     try {
-      await createApplication(trackingId, "manual", "pending", transactionId)
+      await createApplication(trackingId, "manual", "completed", transactionId)
     } catch (error) {
       console.error("Manual payment error:", error)
       alert("Failed to record manual payment. Please try again.")
@@ -225,13 +234,34 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
           <h3 className="font-semibold">Choose Payment Method</h3>
 
           {/* Card Payment */}
-          <div className="p-4 bg-white/5 rounded-xl border border-white/10">
-            <div className="flex items-center space-x-3 mb-4">
+          <div className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-4">
+            <div className="flex items-center space-x-3">
               <CreditCard className="h-6 w-6 text-white/70" />
               <div>
                 <h4 className="font-semibold">Credit/Debit Card</h4>
                 <p className="text-white/70 text-sm">Pay securely with VISA/Mastercard</p>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Input
+                placeholder="Card Number"
+                value={cardNumber}
+                onChange={(e) => setCardNumber(e.target.value)}
+                className="glass-input md:col-span-2"
+              />
+              <Input
+                placeholder="MM/YY"
+                value={expiryDate}
+                onChange={(e) => setExpiryDate(e.target.value)}
+                className="glass-input"
+              />
+              <Input
+                placeholder="CVV"
+                value={cvv}
+                onChange={(e) => setCvv(e.target.value)}
+                className="glass-input"
+              />
             </div>
 
             <Button
@@ -338,14 +368,21 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
               </div>
             )}
           </div>
+
+          <Button
+            onClick={() => setManualPayment(true)}
+            variant="outline"
+            className="w-full glass-button border-white/20 text-white hover:bg-white/10 bg-transparent"
+          >
+            Enter Transaction ID
+          </Button>
         </div>
 
         {manualPayment && (
           <div className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-4">
             <p className="text-sm">
               Send UGX {applicationFee} to <span className="font-semibold">0763253514</span> and
-              enter the transaction ID below. We will manually review your payment and mark your
-              application as pending.
+              enter the transaction ID below. Your application will be submitted for review.
             </p>
             <Input
               value={transactionId}
@@ -353,13 +390,22 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
               className="glass-input"
               placeholder="Transaction ID"
             />
-            <Button
-              onClick={handleManualSubmit}
-              disabled={loading || !transactionId}
-              className="w-full"
-            >
-              {loading ? "Submitting..." : "Submit Manual Payment"}
-            </Button>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <Button
+                onClick={handleManualSubmit}
+                disabled={loading || !transactionId}
+                className="w-full"
+              >
+                {loading ? "Submitting..." : "Submit"}
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={() => setManualPayment(false)}
+                className="w-full text-white/70 hover:text-white"
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         )}
 
