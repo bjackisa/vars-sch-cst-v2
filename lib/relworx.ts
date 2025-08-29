@@ -16,6 +16,7 @@ const RequestPaymentRequest = z.object({
   currency: z.enum(["UGX", "KES", "TZS"]),
   reference: z.string(),
   reason: z.string(),
+  provider: z.enum(["MTN", "AIRTEL"]),
   account_no: z.string(),
 });
 

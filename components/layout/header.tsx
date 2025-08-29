@@ -14,6 +14,7 @@ export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
   const [unreadCount, setUnreadCount] = useState(0)
+  const [isAdmin, setIsAdmin] = useState(false)
   const pathname = usePathname()
 
   const navigation = [
@@ -36,7 +37,13 @@ export default function Header() {
       setUser(user)
 
       if (user) {
-        // Get unread notifications count
+        const { data: profile } = await supabase
+          .from("users")
+          .select("is_admin")
+          .eq("id", user.id)
+          .maybeSingle()
+        setIsAdmin(profile?.is_admin || false)
+
         const { count } = await supabase
           .from("notifications")
           .select("*", { count: "exact", head: true })
@@ -56,6 +63,7 @@ export default function Header() {
       setUser(session?.user || null)
       if (!session?.user) {
         setUnreadCount(0)
+        setIsAdmin(false)
       }
     })
 
@@ -109,6 +117,13 @@ export default function Header() {
                     )}
                   </Button>
                 </Link>
+                {isAdmin && (
+                  <Link href="/admin">
+                    <Button variant="ghost" size="sm" className="glass-button text-white/70 hover:text-white">
+                      Admin
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/dashboard">
                   <Button variant="ghost" size="sm" className="glass-button text-white/70 hover:text-white">
                     <User className="h-4 w-4 mr-2" />
@@ -187,6 +202,13 @@ export default function Header() {
                       )}
                     </Button>
                   </Link>
+                  {isAdmin && (
+                    <Link href="/admin" onClick={() => setIsMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full glass-button justify-start">
+                        Admin Dashboard
+                      </Button>
+                    </Link>
+                  )}
                   <Link href="/dashboard" onClick={() => setIsMenuOpen(false)}>
                     <Button variant="ghost" className="w-full glass-button justify-start">
                       <User className="h-4 w-4 mr-2" />
