@@ -1,6 +1,6 @@
 import { GlassCard } from "@/components/ui/glass-card"
 import { Button } from "@/components/ui/button"
-import { Plus, Users, MessageSquare, Settings, Bell, FileText, Megaphone } from "lucide-react"
+import { Plus, Users, MessageSquare, Settings, Bell, FileText, Megaphone, Globe } from "lucide-react"
 import Link from "next/link"
 
 export function QuickActions() {
@@ -11,6 +11,13 @@ export function QuickActions() {
       icon: Plus,
       href: "/admin/scholarships/new",
       color: "bg-blue-500/20 text-blue-400",
+    },
+    {
+      title: "Add Country",
+      description: "Create a new country option",
+      icon: Globe,
+      href: "/admin/countries/new",
+      color: "bg-cyan-500/20 text-cyan-400",
     },
     {
       title: "Add Timeline Post",
