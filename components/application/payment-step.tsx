@@ -21,6 +21,8 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
   const [loading, setLoading] = useState(false)
   const [mobileMoneyStep, setMobileMoneyStep] = useState<"provider" | "number" | null>(null)
   const [mobileNumber, setMobileNumber] = useState("")
+  const [manualPayment, setManualPayment] = useState(false)
+  const [transactionId, setTransactionId] = useState("")
   const router = useRouter()
 
   const generateTrackingId = () => {
@@ -51,7 +53,10 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
       window.location.href = session.redirect_url
     } catch (error) {
       console.error("Card payment error:", error)
-      alert("Payment failed. Please try again.")
+      alert(
+        "Payment failed. Please send UGX to 0763253514 and enter the transaction ID below for manual review."
+      )
+      setManualPayment(true)
       setLoading(false)
     }
   }
@@ -66,12 +71,21 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
     updateData({ payment_method: provider })
     const trackingId = generateTrackingId()
 
+    let normalized = mobileNumber.replace(/\s+/g, "")
+    if (normalized.startsWith("+")) normalized = normalized.slice(1)
+    if (normalized.startsWith("0")) normalized = `256${normalized.slice(1)}`
+    if (!/^256\d{9}$/.test(normalized)) {
+      alert("Invalid mobile number format. Use 07XXXXXXXX or 2567XXXXXXXXX")
+      setLoading(false)
+      return
+    }
+
     try {
       const res = await fetch("/api/payments/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          msisdn: mobileNumber,
+          msisdn: normalized,
           amount: preselectedScholarship?.application_fee || 0,
           currency: "UGX",
           reference: trackingId,
@@ -101,7 +115,10 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
       throw new Error("Payment not completed")
     } catch (error) {
       console.error("Mobile money payment error:", error)
-      alert("Payment failed. Please try again.")
+      alert(
+        "Payment failed. Please send UGX to 0763253514 and enter the transaction ID below for manual review."
+      )
+      setManualPayment(true)
       setLoading(false)
     }
   }
@@ -156,6 +173,23 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
 
     setLoading(false)
     router.push(`/dashboard?success=true&tracking_id=${trackingId}`)
+  }
+
+  const handleManualSubmit = async () => {
+    if (!transactionId) {
+      alert("Please enter the transaction ID")
+      return
+    }
+    setLoading(true)
+    updateData({ payment_method: "manual" })
+    const trackingId = generateTrackingId()
+    try {
+      await createApplication(trackingId, "manual", "pending", transactionId)
+    } catch (error) {
+      console.error("Manual payment error:", error)
+      alert("Failed to record manual payment. Please try again.")
+      setLoading(false)
+    }
   }
 
   const applicationFee = preselectedScholarship?.application_fee || 0
@@ -254,7 +288,7 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
                     value={mobileNumber}
                     onChange={(e) => setMobileNumber(e.target.value)}
                     className="glass-input"
-                    placeholder="+256 xxx xxx xxx"
+                    placeholder="07XXXXXXXXX"
                   />
                 </div>
 
@@ -305,6 +339,29 @@ export function PaymentStep({ data, updateData, onPrev, user, preselectedScholar
             )}
           </div>
         </div>
+
+        {manualPayment && (
+          <div className="p-4 bg-white/5 rounded-xl border border-white/10 space-y-4">
+            <p className="text-sm">
+              Send UGX {applicationFee} to <span className="font-semibold">0763253514</span> and
+              enter the transaction ID below. We will manually review your payment and mark your
+              application as pending.
+            </p>
+            <Input
+              value={transactionId}
+              onChange={(e) => setTransactionId(e.target.value)}
+              className="glass-input"
+              placeholder="Transaction ID"
+            />
+            <Button
+              onClick={handleManualSubmit}
+              disabled={loading || !transactionId}
+              className="w-full"
+            >
+              {loading ? "Submitting..." : "Submit Manual Payment"}
+            </Button>
+          </div>
+        )}
 
         {/* Security Notice */}
         <div className="bg-white/5 rounded-xl p-4">

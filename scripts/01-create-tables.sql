@@ -66,7 +66,7 @@ CREATE TABLE IF NOT EXISTS public.applications (
   passport_document_url TEXT,
   
   -- Payment Information (Step 3)
-  payment_method TEXT CHECK (payment_method IN ('stripe', 'mtn_momo', 'airtel_pay')),
+  payment_method TEXT CHECK (payment_method IN ('stripe', 'mtn_momo', 'airtel_pay', 'visa', 'manual')),
   payment_status TEXT CHECK (payment_status IN ('pending', 'completed', 'failed')) DEFAULT 'pending',
   payment_reference TEXT,
   amount_paid DECIMAL(10,2),

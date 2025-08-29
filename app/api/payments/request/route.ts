@@ -4,7 +4,7 @@ import { rateLimit } from "@/lib/limiter";
 import { z } from "zod";
 
 const schema = z.object({
-  msisdn: z.string(),
+  msisdn: z.string().regex(/^256\d{9}$/),
   amount: z.number(),
   currency: z.enum(["UGX", "KES", "TZS"]).default("UGX"),
   reference: z.string(),
